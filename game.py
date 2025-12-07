@@ -79,13 +79,15 @@ class Game:
             return
         if self.money >= self.unit_cost:
             self.money -= self.unit_cost
-            start_x = self.player_base.rect.right + 10
+            # spawn a bit closer to the front so new units can immediately engage
+            start_x = self.player_base.rect.right - 10
             self.player_units.append(Unit(start_x, "player"))
 
     def spawn_enemy_unit(self):
         if self.game_over:
             return
-        start_x = self.enemy_base.rect.left - 40
+        # spawn enemy slightly closer so they can hit newly spawned defenders
+        start_x = self.enemy_base.rect.left - 15
         self.enemy_units.append(Unit(start_x, "enemy"))
 
     # ---------- כסף ו-XP ----------
