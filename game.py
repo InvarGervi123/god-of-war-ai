@@ -8,7 +8,7 @@ from settings import (
     draw_ground,
 )
 from entities import Base, Unit
-from effects import ParticleSystem
+from effects import ParticleSystem, Background
 
 
 class Game:
@@ -62,6 +62,9 @@ class Game:
 
         # particle effects
         self.particles = ParticleSystem()
+
+        # dynamic background
+        self.background = Background(self.particles)
 
         # screen shake
         self.shake_time = 0
@@ -215,6 +218,12 @@ class Game:
             self.spawn_enemy_unit()
             self.last_enemy_spawn_time = now
 
+        # update background
+        try:
+            self.background.update(dt)
+        except Exception:
+            pass
+
         enemy_before = len(self.enemy_units)
         base_hp_before = self.enemy_base.hp
 
@@ -321,7 +330,11 @@ class Game:
     def draw(self, surface):
         # draw everything to a temp surface so we can apply screen shake
         temp = pygame.Surface((WIDTH, HEIGHT))
-        draw_gradient_background(temp)
+        # dynamic background (includes gradient)
+        try:
+            self.background.draw(temp)
+        except Exception:
+            draw_gradient_background(temp)
         draw_ground(temp)
 
         self.player_base.draw(temp)
