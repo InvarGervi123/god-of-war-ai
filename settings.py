@@ -40,6 +40,50 @@ TEXT_COLOR = (240, 240, 240)
 font = pygame.font.SysFont("arial", 20)
 
 
+# =========================
+# Tunable gameplay constants
+# כל הערכים האלו ניתנים לשינוי כאן כדי להתאים את המשחק
+# =========================
+
+# Base (player / enemy)
+PLAYER_BASE_MAX_HP = 1000
+ENEMY_BASE_MAX_HP = 1000
+PLAYER_BASE_WIDTH = 150
+ENEMY_BASE_WIDTH = 150
+BASE_HIT_FLASH_DURATION = 220
+
+# Unit (soldier)
+UNIT_WIDTH = 26
+UNIT_HEIGHT = 40
+UNIT_MAX_HP = 100
+UNIT_SPEED = 90.0  # pixels per second
+UNIT_ATTACK_RANGE = 40
+UNIT_ATTACK_DAMAGE = 12
+UNIT_ATTACK_COOLDOWN = 600  # milliseconds
+UNIT_ATTACK_ANIM_DURATION = 160  # ms for attack animation
+UNIT_HIT_FLASH_DURATION = 160
+UNIT_RECOIL_AMOUNT = 6
+
+# Economy / spawn
+UNIT_COST = 35
+MONEY_PER_SECOND = 8
+XP_PER_SECOND = 2
+MONEY_MAX = 9999
+XP_MAX = 99999
+ENEMY_SPAWN_INTERVAL = 3000  # ms between enemy spawns
+
+# Base turret (levels)
+BASE_TURRET_MAX_LEVEL = 3
+BASE_TURRET_XP_COSTS = [0, 50, 120, 250]
+BASE_TURRET_RANGES = [0, 200, 250, 300]
+BASE_TURRET_DAMAGES = [0, 10, 16, 24]
+BASE_TURRET_COOLDOWNS = [0, 900, 650, 450]
+
+# Screen / effects defaults
+DEFAULT_SCREEN_SHAKE_DURATION = 300
+DEFAULT_SCREEN_SHAKE_MAGNITUDE = 10
+
+
 def draw_gradient_background(surface):
     """
     מצייר רקע עם גרדיאנט מלמעלה למטה.

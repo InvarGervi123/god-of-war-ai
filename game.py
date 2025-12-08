@@ -7,6 +7,23 @@ from settings import (
     draw_gradient_background,
     draw_ground,
 )
+from settings import (
+    PLAYER_BASE_WIDTH,
+    ENEMY_BASE_WIDTH,
+    UNIT_COST,
+    MONEY_PER_SECOND,
+    XP_PER_SECOND,
+    ENEMY_SPAWN_INTERVAL,
+    MONEY_MAX,
+    XP_MAX,
+    BASE_TURRET_MAX_LEVEL,
+    BASE_TURRET_XP_COSTS,
+    BASE_TURRET_RANGES,
+    BASE_TURRET_DAMAGES,
+    BASE_TURRET_COOLDOWNS,
+    DEFAULT_SCREEN_SHAKE_DURATION,
+    DEFAULT_SCREEN_SHAKE_MAGNITUDE,
+)
 from entities import Base, Unit
 from effects import ParticleSystem, Background
 
@@ -22,8 +39,8 @@ class Game:
 
     def __init__(self):
         # בסיסים
-        self.player_base = Base(x=40, width=150, side="player")
-        self.enemy_base = Base(x=WIDTH - 40 - 150, width=150, side="enemy")
+        self.player_base = Base(x=40, width=PLAYER_BASE_WIDTH, side="player")
+        self.enemy_base = Base(x=WIDTH - 40 - ENEMY_BASE_WIDTH, width=ENEMY_BASE_WIDTH, side="enemy")
 
         # יחידות
         self.player_units = []
@@ -32,28 +49,28 @@ class Game:
         # כסף ו-XP
         self.money = 100
         self.xp = 0
-        self.money_per_second = 8
-        self.xp_per_second = 2
+        self.money_per_second = MONEY_PER_SECOND
+        self.xp_per_second = XP_PER_SECOND
 
         # עלות יצירת יחידה
-        self.unit_cost = 35
+        self.unit_cost = UNIT_COST
 
         # טיימרים
         self.last_income_time = pygame.time.get_ticks()
-        self.enemy_spawn_interval = 3000
+        self.enemy_spawn_interval = ENEMY_SPAWN_INTERVAL
         self.last_enemy_spawn_time = pygame.time.get_ticks()
 
         # טורט בסיס (שחקן)
         self.base_turret_level = 0
-        self.base_turret_max_level = 3
+        self.base_turret_max_level = BASE_TURRET_MAX_LEVEL
 
         # עלות XP לכל רמה (אינדקס = רמה)
-        self.base_turret_xp_costs = [0, 50, 120, 250]
+        self.base_turret_xp_costs = BASE_TURRET_XP_COSTS
 
         # פרמטרים לכל רמה
-        self.base_turret_ranges = [0, 200, 250, 300]
-        self.base_turret_damages = [0, 10, 16, 24]
-        self.base_turret_cooldowns = [0, 900, 650, 450]
+        self.base_turret_ranges = BASE_TURRET_RANGES
+        self.base_turret_damages = BASE_TURRET_DAMAGES
+        self.base_turret_cooldowns = BASE_TURRET_COOLDOWNS
         self.base_turret_last_shot = 0
 
         # יריות טורט (לאנימציה)
@@ -104,10 +121,10 @@ class Game:
         self.money += int(self.money_per_second * seconds)
         self.xp += int(self.xp_per_second * seconds)
 
-        if self.money > 9999:
-            self.money = 9999
-        if self.xp > 99999:
-            self.xp = 99999
+        if self.money > MONEY_MAX:
+            self.money = MONEY_MAX
+        if self.xp > XP_MAX:
+            self.xp = XP_MAX
 
         self.last_income_time = now
 
@@ -196,7 +213,7 @@ class Game:
                 self.particles.spawn_explosion(end_pos)
             except Exception:
                 pass
-            self.trigger_shake(300, 10)
+            self.trigger_shake(DEFAULT_SCREEN_SHAKE_DURATION, DEFAULT_SCREEN_SHAKE_MAGNITUDE)
 
     def update_turret_shots(self, now):
         # משאירים רק יריות חדשות (אנימציה קצרה ~120ms)
@@ -230,12 +247,12 @@ class Game:
         for u in self.player_units:
             ev = u.update(dt, now, self.enemy_units, self.enemy_base, self.particles)
             if ev and ev.get("base_hit"):
-                self.trigger_shake(240, 7)
+                self.trigger_shake(DEFAULT_SCREEN_SHAKE_DURATION, DEFAULT_SCREEN_SHAKE_MAGNITUDE)
 
         for u in self.enemy_units:
             ev = u.update(dt, now, self.player_units, self.player_base, self.particles)
             if ev and ev.get("base_hit"):
-                self.trigger_shake(240, 7)
+                self.trigger_shake(DEFAULT_SCREEN_SHAKE_DURATION, DEFAULT_SCREEN_SHAKE_MAGNITUDE)
 
         # טורט בסיס
         self.update_base_turret(now)
@@ -291,7 +308,7 @@ class Game:
         surface.blit(turret_text, (20, 60))
 
         lines = [
-            "SPACE - Spawn soldier (cost: 35 money)",
+            f"SPACE - Spawn soldier (cost: {self.unit_cost} money)",
             "Goal: protect your base and destroy the enemy base.",
         ]
 

@@ -19,6 +19,21 @@ from settings import (
     TEXT_COLOR,
     font,
 )
+from settings import (
+    PLAYER_BASE_MAX_HP,
+    ENEMY_BASE_MAX_HP,
+    BASE_HIT_FLASH_DURATION,
+    UNIT_WIDTH,
+    UNIT_HEIGHT,
+    UNIT_MAX_HP,
+    UNIT_SPEED,
+    UNIT_ATTACK_RANGE,
+    UNIT_ATTACK_DAMAGE,
+    UNIT_ATTACK_COOLDOWN,
+    UNIT_ATTACK_ANIM_DURATION,
+    UNIT_HIT_FLASH_DURATION,
+    UNIT_RECOIL_AMOUNT,
+)
 
 
 class Base:
@@ -39,11 +54,12 @@ class Base:
         self.side = side
         # גובה הבסיס 140 פיקסלים
         self.rect = pygame.Rect(x, GROUND_Y - 140, width, 140)
-        self.max_hp = 1000
+        # HP ניתן לכוונון ב- settings.py
+        self.max_hp = PLAYER_BASE_MAX_HP if side == "player" else ENEMY_BASE_MAX_HP
         self.hp = self.max_hp
         # used to show a brief red flash when base is hit
         self.hit_flash_time = 0
-        self.hit_flash_duration = 220
+        self.hit_flash_duration = BASE_HIT_FLASH_DURATION
 
     def take_damage(self, amount):
         """
@@ -134,9 +150,9 @@ class Unit:
         """
         self.side = side
 
-        # גודל הלוחם
-        self.width = 26
-        self.height = 40
+        # גודל הלוחם (ניתן לכוונן ב- settings.py)
+        self.width = UNIT_WIDTH
+        self.height = UNIT_HEIGHT
 
         # כיוון הליכה: שחקן הולך ימינה, אויב הולך שמאלה
         self.dir = 1 if side == "player" else -1
@@ -147,31 +163,31 @@ class Unit:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         # חיים
-        self.max_hp = 100
+        self.max_hp = UNIT_MAX_HP
         self.hp = self.max_hp
 
         # מהירות הליכה (פיקסלים לשניה)
-        self.speed = 90
+        self.speed = UNIT_SPEED
 
-        # נתוני תקיפה
-        self.attack_range = 40
-        self.attack_damage = 12
-        self.attack_cooldown = 600  # מילישניות
+        # נתוני תקיפה (ניתנים לכוונון ב- settings.py)
+        self.attack_range = UNIT_ATTACK_RANGE
+        self.attack_damage = UNIT_ATTACK_DAMAGE
+        self.attack_cooldown = UNIT_ATTACK_COOLDOWN  # מילישניות
         self.last_attack_time = 0
 
         self.alive = True
         # animation / effects
         self.attacking = False
         self.attack_anim_time = 0
-        self.attack_anim_duration = 160
+        self.attack_anim_duration = UNIT_ATTACK_ANIM_DURATION
         self.attack_target_pos = None
 
         # brief flash when hit
         self.hit_flash_time = 0
-        self.hit_flash_duration = 160
+        self.hit_flash_duration = UNIT_HIT_FLASH_DURATION
 
         # recoil pixels when attacking
-        self.recoil_amount = 6
+        self.recoil_amount = UNIT_RECOIL_AMOUNT
 
     def is_in_range(self, other_rect):
         """
