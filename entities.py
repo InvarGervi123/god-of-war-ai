@@ -17,8 +17,8 @@ from settings import (
     PLAYER_COLOR,
     ENEMY_COLOR,
     TEXT_COLOR,
-    font,
 )
+import visuals
 from settings import (
     PLAYER_BASE_MAX_HP,
     ENEMY_BASE_MAX_HP,
@@ -115,7 +115,8 @@ class Base:
 
         # טקסט מעל הבסיס
         label = "Player Base" if self.side == "player" else "Enemy Base"
-        text = font.render(f"{label}: {self.hp}", True, TEXT_COLOR)
+        # visuals.ensure_fonts() is called from main after pygame.init()
+        text = visuals.font.render(f"{label}: {self.hp}", True, TEXT_COLOR)
         surface.blit(
             text,
             (self.rect.centerx - text.get_width() // 2, bar_y - 22),

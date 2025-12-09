@@ -3,11 +3,6 @@ settings.py
 קובץ של הגדרות קבועות + ציור רקע ואדמה.
 """
 
-import pygame
-
-# חייבים לאתחל pygame לפני שימוש בפונטים
-pygame.init()
-
 # גודל חלון
 WIDTH, HEIGHT = 1000, 600
 
@@ -34,10 +29,6 @@ HP_MED = (230, 200, 40)
 HP_BAD = (220, 60, 60)
 
 TEXT_COLOR = (240, 240, 240)
-
-
-# פונט לטקסט
-font = pygame.font.SysFont("arial", 20)
 
 
 # =========================
@@ -84,20 +75,4 @@ DEFAULT_SCREEN_SHAKE_DURATION = 300
 DEFAULT_SCREEN_SHAKE_MAGNITUDE = 10
 
 
-def draw_gradient_background(surface):
-    """
-    מצייר רקע עם גרדיאנט מלמעלה למטה.
-    """
-    for y in range(HEIGHT):
-        ratio = y / HEIGHT
-        r = int(BG_TOP[0] * (1 - ratio) + BG_BOTTOM[0] * ratio)
-        g = int(BG_TOP[1] * (1 - ratio) + BG_BOTTOM[1] * ratio)
-        b = int(BG_TOP[2] * (1 - ratio) + BG_BOTTOM[2] * ratio)
-        pygame.draw.line(surface, (r, g, b), (0, y), (WIDTH, y))
-
-
-def draw_ground(surface):
-    """
-    מצייר אדמה פשוטה בתחתית המסך.
-    """
-    pygame.draw.rect(surface, GROUND_COLOR, (0, GROUND_Y, WIDTH, HEIGHT - GROUND_Y))
+# Note: rendering helpers and fonts were moved to visuals.py

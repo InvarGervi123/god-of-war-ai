@@ -3,10 +3,9 @@ from settings import (
     WIDTH,
     HEIGHT,
     TEXT_COLOR,
-    font,
-    draw_gradient_background,
-    draw_ground,
 )
+import visuals
+from visuals import draw_gradient_background, draw_ground
 from settings import (
     PLAYER_BASE_WIDTH,
     ENEMY_BASE_WIDTH,
@@ -296,13 +295,14 @@ class Game:
         self.shake_magnitude = magnitude
 
     def draw_ui(self, surface):
-        money_text = font.render(f"Money: {self.money}", True, TEXT_COLOR)
+        # ensure visuals fonts are initialized by main
+        money_text = visuals.font.render(f"Money: {self.money}", True, TEXT_COLOR)
         surface.blit(money_text, (20, 10))
 
-        xp_text = font.render(f"XP: {self.xp}", True, TEXT_COLOR)
+        xp_text = visuals.font.render(f"XP: {self.xp}", True, TEXT_COLOR)
         surface.blit(xp_text, (20, 35))
 
-        turret_text = font.render(
+        turret_text = visuals.font.render(
             f"Base Turret Level: {self.base_turret_level}", True, TEXT_COLOR
         )
         surface.blit(turret_text, (20, 60))
@@ -320,7 +320,7 @@ class Game:
             lines.append("Base turret is at max level")
 
         for i, line in enumerate(lines):
-            t = font.render(line, True, TEXT_COLOR)
+            t = visuals.font.render(line, True, TEXT_COLOR)
             surface.blit(t, (WIDTH // 2 - t.get_width() // 2, 10 + i * 22))
 
         if self.game_over:
@@ -329,7 +329,7 @@ class Game:
             surface.blit(overlay, (0, 0))
 
             msg = "YOU WIN!" if self.winner == "player" else "YOU LOSE!"
-            t = font.render(msg, True, (255, 255, 255))
+            t = visuals.font.render(msg, True, (255, 255, 255))
             surface.blit(
                 t,
                 (
@@ -338,7 +338,7 @@ class Game:
                 ),
             )
 
-            t2 = font.render("Press R to restart, ESC to quit", True, (230, 230, 230))
+            t2 = visuals.font.render("Press R to restart, ESC to quit", True, (230, 230, 230))
             surface.blit(
                 t2,
                 (WIDTH // 2 - t2.get_width() // 2, HEIGHT // 2 + 20),
