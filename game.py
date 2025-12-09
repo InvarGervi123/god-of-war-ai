@@ -22,6 +22,7 @@ from settings import (
     BASE_TURRET_COOLDOWNS,
     DEFAULT_SCREEN_SHAKE_DURATION,
     DEFAULT_SCREEN_SHAKE_MAGNITUDE,
+    ENEMY_TURRET_AUTO_UPGRADE_INTERVAL,
 )
 from entities import Base, Unit
 from effects import ParticleSystem, Background
@@ -75,6 +76,12 @@ class Game:
         # יריות טורט (לאנימציה)
         # כל ירייה: {"start": (x,y), "end": (x,y), "time": ms}
         self.turret_shots = []
+
+        # enemy turret (auto-upgrade + shots)
+        self.enemy_turret_level = 0
+        self.enemy_turret_last_shot = 0
+        self.enemy_turret_last_upgrade = pygame.time.get_ticks()
+        self.enemy_turret_upgrade_interval = ENEMY_TURRET_AUTO_UPGRADE_INTERVAL
 
         # particle effects
         self.particles = ParticleSystem()
@@ -214,6 +221,68 @@ class Game:
                 pass
             self.trigger_shake(DEFAULT_SCREEN_SHAKE_DURATION, DEFAULT_SCREEN_SHAKE_MAGNITUDE)
 
+    def update_enemy_turret(self, now):
+        """Enemy base turret automatic firing and periodic auto-upgrade."""
+        lvl = self.enemy_turret_level
+        # auto-upgrade over time
+        if lvl < self.base_turret_max_level and now - self.enemy_turret_last_upgrade >= self.enemy_turret_upgrade_interval:
+            self.enemy_turret_level += 1
+            self.enemy_turret_last_upgrade = now
+
+        if self.enemy_turret_level <= 0:
+            return
+
+        rng = self.base_turret_ranges[self.enemy_turret_level]
+        cd = self.base_turret_cooldowns[self.enemy_turret_level]
+        dmg = self.base_turret_damages[self.enemy_turret_level]
+
+        if now - self.enemy_turret_last_shot < cd:
+            return
+
+        # search for closest player unit in range
+        base_x = self.enemy_base.rect.centerx
+        base_y = self.enemy_base.rect.top - 15
+        target = None
+        closest = 999999
+
+        for pu in self.player_units:
+            if not pu.alive:
+                continue
+            dist = abs(pu.rect.centerx - base_x)
+            if dist <= rng and dist < closest:
+                closest = dist
+                target = pu
+
+        # if no unit, consider hitting player base
+        if target is None and self.player_base is not None:
+            dist = abs(self.player_base.rect.centerx - base_x)
+            if dist <= rng:
+                target = self.player_base
+
+        if target is None:
+            return
+
+        # fire
+        self.enemy_turret_last_shot = now
+        try:
+            target.hp -= dmg
+        except Exception:
+            pass
+        if isinstance(target, Unit) and target.hp <= 0:
+            target.alive = False
+
+        try:
+            end_pos = (target.rect.centerx, target.rect.centery - 8)
+        except Exception:
+            end_pos = (base_x, base_y)
+
+        # share turret_shots list for visual effect
+        self.turret_shots.append({"start": (base_x, base_y), "end": end_pos, "time": now})
+        try:
+            self.particles.spawn_sparks(end_pos, color=(255, 180, 120), count=8)
+        except Exception:
+            pass
+
     def update_turret_shots(self, now):
         # משאירים רק יריות חדשות (אנימציה קצרה ~120ms)
         self.turret_shots = [
@@ -253,8 +322,13 @@ class Game:
             if ev and ev.get("base_hit"):
                 self.trigger_shake(DEFAULT_SCREEN_SHAKE_DURATION, DEFAULT_SCREEN_SHAKE_MAGNITUDE)
 
-        # טורט בסיס
+        # טורט בסיס (player + enemy)
         self.update_base_turret(now)
+        # enemy turret (auto-upgrade + fire)
+        try:
+            self.update_enemy_turret(now)
+        except Exception:
+            pass
         self.update_turret_shots(now)
 
         # update particles system

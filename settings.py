@@ -70,6 +70,9 @@ BASE_TURRET_RANGES = [0, 200, 250, 300]
 BASE_TURRET_DAMAGES = [0, 10, 16, 24]
 BASE_TURRET_COOLDOWNS = [0, 900, 650, 450]
 
+# Enemy turret auto-upgrade (ms) - enemy will automatically upgrade its turret every interval
+ENEMY_TURRET_AUTO_UPGRADE_INTERVAL = 20000  # 20 seconds
+
 # Screen / effects defaults
 DEFAULT_SCREEN_SHAKE_DURATION = 300
 DEFAULT_SCREEN_SHAKE_MAGNITUDE = 10
